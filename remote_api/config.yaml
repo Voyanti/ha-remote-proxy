@@ -8,7 +8,7 @@ arch:
 - armv7
 - aarch64
 - amd64
-- i386
+# - i386
 startup: application
 advanced: true
 stage: experimental
@@ -19,5 +19,5 @@ ports:
   80/tcp: 80
 options: {}
 schema: false
-image: homeassistant/{arch}-addon-dev-remote_api
+image: ghcr.io/voyanti/ha-remote-proxy
 init: false

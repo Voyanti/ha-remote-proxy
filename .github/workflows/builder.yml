@@ -98,27 +98,53 @@ jobs:
               echo "BUILD_ARGS=--docker-hub-check" >> $GITHUB_ENV;
           fi
 
-      - name: Login to DockerHub
-        if: env.BUILD_ARGS == '--docker-hub-check'
-        uses: docker/login-action@v3.5.0
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Login to GitHub Container Registry
-        if: env.BUILD_ARGS == '--docker-hub-check'
-        uses: docker/login-action@v3.5.0
+      - name: Log in to GitHub Container Registry
+        if: steps.check.outputs.build_arch == 'true'  # Only log in if build is needed
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.repository_owner }}
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build ${{ matrix.addon }} add-on
-        if: steps.check.outputs.build_arch == 'true'
-        uses: home-assistant/builder@2025.03.0
+      - name: Set up Docker Buildx
+        if: steps.check.outputs.build_arch == 'true'  # Only set up if build is needed
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push ${{ matrix.addon }} add-on
+        if: steps.check.outputs.build_arch == 'true'  # Only build if version changed
+        uses: docker/build-push-action@v5
         with:
-          args: |
-            ${{ env.BUILD_ARGS }} \
-            --${{ matrix.arch }} \
-            --target /data/${{ matrix.addon }} \
-            --addon
+          context: .
+          push: true
+          platforms: linux/${{ matrix.arch }}
+          tags: |
+            ghcr.io/${{ env.REPO_OWNER }}/${{ github.event.repository.name }}:latest
+            ghcr.io/${{ env.REPO_OWNER }}/${{ github.event.repository.name }}:${{ env.VERSION }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+
+
+      # - name: Login to DockerHub
+      #   if: env.BUILD_ARGS == '--docker-hub-check'
+      #   uses: docker/login-action@v3.5.0
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # - name: Login to GitHub Container Registry
+      #   if: env.BUILD_ARGS == '--docker-hub-check'
+      #   uses: docker/login-action@v3.5.0
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.repository_owner }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Build ${{ matrix.addon }} add-on
+      #   if: steps.check.outputs.build_arch == 'true'
+      #   uses: home-assistant/builder@2025.03.0
+      #   with:
+      #     args: |
+      #       ${{ env.BUILD_ARGS }} \
+      #       --${{ matrix.arch }} \
+      #       --target /data/${{ matrix.addon }} \
+      #       --addon
