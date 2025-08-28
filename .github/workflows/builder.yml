@@ -76,6 +76,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5.0.0
 
+      - name: Convert repository owner to lowercase
+        run: echo "REPO_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+
       - name: Get information
         id: info
         uses: home-assistant/actions/helpers/info@master
