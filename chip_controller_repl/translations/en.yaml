@@ -1,4 +1,0 @@
-configuration:
-  chip_debug:
-    name: CHIP Debug Level
-    description: Enable CHIP Debug log level.
