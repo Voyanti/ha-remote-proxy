@@ -122,11 +122,11 @@ jobs:
           push: true
           platforms: linux/${{ matrix.arch }}
           tags: |
-            ghcr.io/${{ env.REPO_OWNER }}/${{ github.event.repository.name }}:latest
-            ghcr.io/${{ env.REPO_OWNER }}/${{ github.event.repository.name }}:${{ env.VERSION }}
+            ghcr.io/${{ env.REPO_OWNER }}/${{ matrix.addon }}
           labels: |
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
 
+      # ghcr.io/${{ env.REPO_OWNER }}/${{ github.event.repository.name }}:latest 
 
       # - name: Login to DockerHub
       #   if: env.BUILD_ARGS == '--docker-hub-check'
