@@ -1,5 +1,5 @@
 name: Remote API proxy
-version: 1.3.2
+version: 1.3.3
 slug: remote_api_soluno
 description: Remote API proxy for Home Assistant with watchdog
 url: https://developers.home-assistant.io/docs/supervisor/development/#supervisor-api-access
@@ -19,5 +19,5 @@ ports:
   80/tcp: 80
 options: {}
 schema: false
-image: ghcr.io/voyanti/ha-remote-proxy
+image: ghcr.io/voyanti/{arch}-ha-remote-proxy
 init: false
